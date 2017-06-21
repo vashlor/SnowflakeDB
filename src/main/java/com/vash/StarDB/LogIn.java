@@ -24,7 +24,6 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-
 public class LogIn extends JFrame{
 	private Connection conn = null;
 	private Statement stmt = null;
@@ -98,6 +97,7 @@ public class LogIn extends JFrame{
 		userField = new JTextField(15);
 		passwordField = new JPasswordField(15);
 		serverName = new JTextField(15);
+		serverName.setText("localhost");
 		databaseName = new JTextField(15);
 		databaseName.setText("star");
 		
