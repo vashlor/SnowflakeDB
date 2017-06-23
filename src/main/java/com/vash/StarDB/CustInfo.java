@@ -22,6 +22,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class CustInfo extends JFrame{
+	private final int width = 480;
+	private final int height = 360;
 	private JTextField textField = null;
 	private Connection conn = null;
 	private Statement stmt = null;
@@ -36,7 +38,7 @@ public class CustInfo extends JFrame{
 	
 	private void createGUI(){
 		setTitle("Customer Information");
-		setSize(480, 360);
+		setSize(width, height);
 		setBackground(Color.BLACK);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -138,6 +140,7 @@ public class CustInfo extends JFrame{
 	private JPanel createHeader(){
 		JPanel panel = new JPanel();
 		panel.setBackground(Color.BLACK);
+		panel.setPreferredSize(new Dimension((int) (width*.1), (int) (height*.1)));
 		
 		JLabel title = new JLabel("Customer Information");
 		title.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT);
@@ -152,6 +155,8 @@ public class CustInfo extends JFrame{
 	
 	private JPanel createTail(){
 		JPanel panel = new JPanel();
+		panel.setBackground(Color.BLACK);
+		panel.setPreferredSize(new Dimension((int) (width*.1), (int) (height*.1)));
 		
 		JButton bSubmit = new JButton("Submit");
 		ActionListener aSubmit = new ActionListener() {
@@ -165,7 +170,7 @@ public class CustInfo extends JFrame{
 		JButton bCancel = new JButton("Cancel");
 		ActionListener aCancel = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				MainMenu menu = new MainMenu(conn);
+				CustMenu custMenu= new CustMenu(conn);
 				dispose();
 			}
 		};
@@ -174,7 +179,6 @@ public class CustInfo extends JFrame{
 		
 		panel.add(bSubmit);
 		panel.add(bCancel);
-		panel.setBackground(Color.BLACK);
 		return panel;
 	}
 	
@@ -201,7 +205,7 @@ public class CustInfo extends JFrame{
 		}
 		else {
 			Insert(name.getText(), street.getText(), city.getText(), state.getText(), zip.getText());
-			MainMenu menu = new MainMenu(conn);
+			CustMenu custMenu= new CustMenu(conn);
 			dispose();
 		}
 	}

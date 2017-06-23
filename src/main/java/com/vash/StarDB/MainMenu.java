@@ -19,6 +19,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class MainMenu extends JFrame {
+	private final int width = 480;
+	private final int height = 360;
 	private JButton custInfo, search, logout;
 	private Connection conn;
 	
@@ -29,9 +31,9 @@ public class MainMenu extends JFrame {
 	
 	private void createGUI(){
 		setTitle("Main Menu");
-		setSize(480, 360);
-		setMinimumSize(new Dimension(480, 360));
-		setMaximumSize(new Dimension(480, 360));
+		setSize(width, height);
+		setMinimumSize(new Dimension(width, height));
+		setMaximumSize(new Dimension(width, height));
 		setResizable(false);
 		setBackground(Color.BLACK);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -60,7 +62,7 @@ public class MainMenu extends JFrame {
 		custInfo = new JButton("Customers");
 		ActionListener aCust = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CustInfo cust = new CustInfo(conn);
+				CustMenu custMenu = new CustMenu(conn);
 				dispose();
 			}
 		};
@@ -107,7 +109,7 @@ public class MainMenu extends JFrame {
 	private JPanel createDate(){
 		JPanel panel = new JPanel();
 		panel.setBackground(Color.DARK_GRAY);
-		panel.setPreferredSize(new Dimension(100, 30));
+		panel.setPreferredSize(new Dimension((int) (width*.1), (int) (height*.1)));
 		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 		LocalDateTime time = LocalDateTime.now();
 		String date = dtf.format(time);
@@ -121,7 +123,7 @@ public class MainMenu extends JFrame {
 	
 	private JPanel createHeader(){
 		JPanel panel = new JPanel();
-		panel.setPreferredSize(new Dimension(100, 30));
+		panel.setPreferredSize(new Dimension((int) (width*.1), (int) (height*.1)));
 		panel.setBackground(Color.BLACK);
 		return panel;
 	}

@@ -25,6 +25,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 public class LogIn extends JFrame{
+	private final int width = 480;
+	private final int height = 360;
 	private Connection conn = null;
 	private Statement stmt = null;
 	private ResultSet rs = null;
@@ -52,9 +54,9 @@ public class LogIn extends JFrame{
 
 	private void createGUI(){
 		setTitle("Log In");
-		setSize(480, 360);
-		setMinimumSize(new Dimension(480, 360));
-		setMaximumSize(new Dimension(480, 360));
+		setSize(width, height);
+		setMinimumSize(new Dimension(width, height));
+		setMaximumSize(new Dimension(width, height));
 		setResizable(false);
 		setBackground(Color.BLACK);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -77,7 +79,7 @@ public class LogIn extends JFrame{
 
 	private JPanel createHeader(){
 		JPanel panel = new JPanel();
-		panel.setPreferredSize(new Dimension(100, 30));
+		panel.setPreferredSize(new Dimension((int) (width*.1), (int) (height*.1)));
 		panel.setBackground(Color.BLACK);
 		return panel;
 	}
@@ -155,6 +157,8 @@ public class LogIn extends JFrame{
 
 	private JPanel createTail(){
 		JPanel panel = new JPanel();
+		panel.setPreferredSize(new Dimension((int) (width*.1), (int) (height*.1)));
+		
 		JButton bLogin = new JButton("Log In");
 		ActionListener login = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

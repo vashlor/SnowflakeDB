@@ -26,6 +26,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 public class Search extends JFrame {
+	private final int width = 480;
+	private final int height = 360;
 	private static final String[] types = {"Query", "Car Model", "Manufacturer", "Dealership"};
 	private JTextField tfQuery = null;
 	private JTextArea taResult = null;
@@ -63,7 +65,7 @@ public class Search extends JFrame {
 	
 	private JPanel createHeader(){
 		JPanel panel = new JPanel();
-		panel.setPreferredSize(new Dimension(100, 30));
+		panel.setPreferredSize(new Dimension((int) (width*.1), (int) (height*.1)));
 		panel.setBackground(Color.BLACK);
 		JLabel title = new JLabel("Search Inventory");
 		title.setForeground(Color.WHITE);
@@ -89,6 +91,7 @@ public class Search extends JFrame {
 
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyChar() == KeyEvent.VK_ENTER){
+					taResult.setText("");
 					String text = tfQuery.getText();
 					String type = cbList.getSelectedItem().toString();
 					
@@ -104,6 +107,7 @@ public class Search extends JFrame {
 		JButton bSearch = new JButton("Search");
 		ActionListener aSearch = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				taResult.setText("");
 				String text = tfQuery.getText();
 				String type = cbList.getSelectedItem().toString();
 				
@@ -112,7 +116,6 @@ public class Search extends JFrame {
 		};
 		bSearch.addActionListener(aSearch);
 		bSearch.setPreferredSize(new Dimension(100, 25));
-		
 		
 		pQuery.add(lQuery);
 		pQuery.add(cbList);
@@ -136,6 +139,7 @@ public class Search extends JFrame {
 	private JPanel createTail(){
 		JPanel panel = new JPanel();
 		panel.setBackground(Color.BLACK);
+		panel.setPreferredSize(new Dimension((int) (width*.1), (int) (height*.1)));
 		
 		JButton bExit = new JButton("Back");
 		ActionListener aExit = new ActionListener() {
@@ -153,9 +157,8 @@ public class Search extends JFrame {
 	}
 	
 	private void Query(String text, String type){
-		taResult.setText("");
-		
 		String query = "";
+		
 		switch (type){
 		case "Query" :
 			query  = text;
@@ -170,6 +173,7 @@ public class Search extends JFrame {
 			query = "SELECT * FROM dim_stores WHERE name LIKE '%" + text + "%';";
 			break;
 		}
+		
 		if (query == null || query.isEmpty()){
 			taResult.setText("Query statement is empty.");
 		}
@@ -186,7 +190,7 @@ public class Search extends JFrame {
 			}
 			tfQuery.setText("");
 			} catch (SQLSyntaxErrorException e) {
-				taResult.setText("Incorrect search");
+				taResult.setText("Incorrect search\n" + e);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
