@@ -15,6 +15,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLSyntaxErrorException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -22,19 +26,25 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 public class Search extends JFrame {
-	private final int width = 480;
-	private final int height = 360;
-	private static final String[] types = {"Query", "Car Model", "Manufacturer", "Dealership"};
+	private final int width = 800;
+	private final int height = 600;
+	private static final String[] types = {"Car Model", "Manufacturer", "Dealership"};
+	private String[] labels;
 	private JTextField tfQuery = null;
-	private JTextArea taResult = null;
 	private Connection conn = null;
 	private Statement stmt = null;
 	private ResultSet rs = null;
 	private JComboBox<String> cbList = null;
+	private JTable tSearch = null;
+	private JPanel pResult = null;
+	private JScrollPane scrollPane = null;
+	private JPanel pMain = null;
+	private Container pane = null;
 	
 	public Search(Connection conn){
 		this.conn = conn;
@@ -43,7 +53,7 @@ public class Search extends JFrame {
 	
 	private void createGUI(){
 		setTitle("Search Inventory");
-		setSize(800, 600);
+		setSize(width, height);
 		setBackground(Color.BLACK);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -54,10 +64,10 @@ public class Search extends JFrame {
 	
 	private void createPanels(){
 		JPanel pHeader = createHeader();
-		JPanel pMain = createMain();
+		pMain = createMain();
 		JPanel pTail = createTail();
 		
-		Container pane = getContentPane();
+		pane = getContentPane();
 		pane.add(pHeader, BorderLayout.NORTH);
 		pane.add(pMain, BorderLayout.CENTER);
 		pane.add(pTail, BorderLayout.SOUTH);
@@ -85,17 +95,17 @@ public class Search extends JFrame {
 		cbList = new JComboBox<String>(types);
 		
 		tfQuery = new JTextField(30);
+		tSearch = new JTable(5, 10);
 		KeyListener enter = new KeyListener(){
 			public void keyTyped(KeyEvent e) {
 			}
 
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyChar() == KeyEvent.VK_ENTER){
-					taResult.setText("");
 					String text = tfQuery.getText();
 					String type = cbList.getSelectedItem().toString();
 					
-					Query(text, type);
+					createScrollPane(text, type);
 				}
 			}
 
@@ -107,11 +117,10 @@ public class Search extends JFrame {
 		JButton bSearch = new JButton("Search");
 		ActionListener aSearch = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				taResult.setText("");
 				String text = tfQuery.getText();
 				String type = cbList.getSelectedItem().toString();
 				
-				Query(text, type);
+				createScrollPane(text, type);
 			}
 		};
 		bSearch.addActionListener(aSearch);
@@ -121,17 +130,9 @@ public class Search extends JFrame {
 		pQuery.add(cbList);
 		pQuery.add(tfQuery);
 		pQuery.add(bSearch);
-
-		JPanel pResult = new JPanel();
-		pResult.setBackground(Color.DARK_GRAY);
-		taResult = new JTextArea(25, 60);
-		taResult.setEditable(false);
-		pResult.add(taResult);
-		JScrollPane scrollPane = new JScrollPane(pResult); 
-		scrollPane.setBackground(Color.DARK_GRAY);
 		
 		panel.add(pQuery, BorderLayout.NORTH);
-		panel.add(scrollPane, BorderLayout.CENTER);
+		//panel.add(scrollPane, BorderLayout.CENTER);
 		
 		return panel;
 	}
@@ -155,9 +156,67 @@ public class Search extends JFrame {
 		
 		return panel;
 	}
+
+	private void createScrollPane(){
+		scrollPane = new JScrollPane(); 
+		scrollPane.setBackground(Color.DARK_GRAY);
+		scrollPane.setPreferredSize(new Dimension((int) (width*.99f), (int) (height*.735f)));
+		pMain.add(scrollPane, BorderLayout.CENTER);
+	}
 	
-	private void Query(String text, String type){
+	private void createScrollPane(String text, String type){
 		String query = "";
+		
+		switch (type){
+		case "Car Model" :
+			query = "call model('" + text + "');";
+			labels = new String[]{"Name", "Street", "City", "State", "ZIP"};
+			break;
+		case "Manufacturer" :
+			query = "call make('" + text + "');";
+			labels = new String[]{"Name", "Street", "City", "State", "ZIP"};
+			break;
+		case "Dealership" :
+			query = "SELECT * FROM dim_stores WHERE name LIKE '%" + text + "%';";
+			labels = new String[]{"ID", "Name", "Street", "City", "State", "ZIP", "Specialty", "Stock"};
+			break;
+		}
+		
+		if (query == null || query.isEmpty()){
+			System.out.println("Query statement is empty.");
+		}
+		else {
+			try {
+				stmt = conn.createStatement();
+				rs = stmt.executeQuery(query);
+				Object[][] data = new Object[100][100];
+				for (int i = 0; rs.next(); i++){
+					for(int j = 1; j <= rs.getMetaData().getColumnCount(); j++){
+						data[i][j-1] = rs.getString(j);
+					}
+				}
+				tSearch = new JTable(data, labels);
+			} catch (SQLSyntaxErrorException e) {
+				System.out.println("Incorrect search\n" + e);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		if (scrollPane != null){
+			pMain.remove(scrollPane);
+		}
+		scrollPane = new JScrollPane(tSearch); 
+		scrollPane.setBackground(Color.DARK_GRAY);
+		scrollPane.setPreferredSize(new Dimension((int) (width*.99f), (int) (height*.735f)));
+		pMain.add(scrollPane, BorderLayout.CENTER);
+		invalidate();
+		revalidate();
+		repaint();
+	}
+	
+	private JScrollPane Query(String text, String type){
+		String query = "";
+		JTable search = new JTable();
 		
 		switch (type){
 		case "Query" :
@@ -165,35 +224,43 @@ public class Search extends JFrame {
 			break;
 		case "Car Model" :
 			query = "call model('" + text + "');";
+			labels = new String[]{"ID", "Name", "Street", "City", "State", "ZIP"};
 			break;
 		case "Manufacturer" :
 			query = "call make('" + text + "');";
+			labels = new String[]{"ID", "Name", "Street", "City", "State", "ZIP"};
 			break;
 		case "Dealership" :
 			query = "SELECT * FROM dim_stores WHERE name LIKE '%" + text + "%';";
+			labels = new String[]{"ID", "Name", "Street", "City", "State", "ZIP", "Specialty", "Stock"};
 			break;
 		}
 		
 		if (query == null || query.isEmpty()){
-			taResult.setText("Query statement is empty.");
+			System.out.println("Query statement is empty.");
 		}
 		else {
 			try {
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery(query);
-			while(rs.next()){
-				taResult.append(" | ");
-				for(int i = 1; i <= rs.getMetaData().getColumnCount(); i++){
-					taResult.append(rs.getString(i) + " | ");
+				stmt = conn.createStatement();
+				rs = stmt.executeQuery(query);
+				Object[][] data = new Object[100][100];
+				for (int i = 0; rs.next(); i++){
+					for(int j = 1; j <= rs.getMetaData().getColumnCount(); j++){
+						data[i][j-1] = rs.getString(j);
+					}
 				}
-				taResult.append("\n");
-			}
-			tfQuery.setText("");
+				search = new JTable(data, labels);
 			} catch (SQLSyntaxErrorException e) {
-				taResult.setText("Incorrect search\n" + e);
+				System.out.println("Incorrect search\n" + e);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
+		
+		pMain.remove(scrollPane);
+		JScrollPane pane = new JScrollPane(search); 
+		pane.setBackground(Color.DARK_GRAY);
+		pane.setPreferredSize(new Dimension((int) (width*.99f), (int) (height*.735f)));
+		return pane;
 	}
 }
