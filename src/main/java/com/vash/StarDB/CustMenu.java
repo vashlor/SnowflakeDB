@@ -19,7 +19,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 public class CustMenu extends JFrame {
-	private static final String[] labels = {"ID", "Name", "Street", "City", "State", "ZIP"};
+	private static final String[] labels = {"ID", "Name", "Street", "City", "State"};
 	private final int width = 800;
 	private final int height = 600;
 	private Connection conn = null;
@@ -125,15 +125,13 @@ public class CustMenu extends JFrame {
 		cust.getColumnModel().getColumn(0).setResizable(false);
 		cust.getColumnModel().getColumn(0).setMaxWidth((int) (width*.05));
 		cust.getColumnModel().getColumn(1).setResizable(false);
-		cust.getColumnModel().getColumn(1).setMaxWidth((int) (width*.2));
+		cust.getColumnModel().getColumn(1).setMaxWidth((int) (width*.3));
 		cust.getColumnModel().getColumn(2).setResizable(false);
 		cust.getColumnModel().getColumn(2).setMaxWidth((int) (width*.4));
 		cust.getColumnModel().getColumn(3).setResizable(false);
 		cust.getColumnModel().getColumn(3).setMaxWidth((int) (width*.2));
 		cust.getColumnModel().getColumn(4).setResizable(false);
 		cust.getColumnModel().getColumn(4).setMaxWidth((int) (width*.05));
-		cust.getColumnModel().getColumn(5).setResizable(false);
-		cust.getColumnModel().getColumn(5).setMaxWidth((int) (width*.1));
 		cust.setEnabled(false);
 	}
 }
